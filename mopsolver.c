@@ -6,7 +6,25 @@
  */
 
 #include "mopsolver.h"
-#include <string.h>
+
+struct point{
+   int row;
+   int col;
+   int visited;
+};
+
+typedef struct stackNode{
+   struct point *loc;
+   int distance;
+   struct stackNode *next;
+   struct stackNode *prev;
+   int solution;
+}node;
+
+
+int isValid( int row, int col ){
+   return (row >= 0) && (row < Rows) && (col >= 0) && (col < Cols);
+}
 
 void getdims( FILE *fp, int dims[] ){
    int N = 0; // rows
@@ -68,6 +86,27 @@ void option_p( int i ){
 /// Prints shortest solution steps
 void option_s( int i){
 
+}
+
+int solver( char maze[Rows][Cols], struct point* src, struct point* dst ){
+   if( maze[0][0] == '1' )
+      return 0;
+   src->visited = 1;
+
+   node *root = malloc(sizeof(node));
+   root->loc = src;
+   root->distance = 0;
+   root->solution = 1;
+   root->next = malloc(sizeof(node));
+   root->prev = NULL;
+
+   node *curr = root;
+   while( root ){
+      if(curr->loc->row == dst->row && curr->loc->col == dst->col)
+         return curr->distance;
+
+
+   }
 }
 
 void pptopbot( FILE *out ){
@@ -164,6 +203,9 @@ int main( int argc, char* argv[] ){
       fip = fopen( infile, "r" );
       read_maze( fip, dims, maze );
    }
+   struct point src = {0, 0, 0};
+   struct point dest = {Rows - 1, Cols - 1, 0};
+   solver( maze, &src, &dest );
    if( d )
       option_d( maze, fop );
    if( s )
