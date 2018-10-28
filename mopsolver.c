@@ -7,23 +7,53 @@
 
 #include "mopsolver.h"
 
-struct point{
+typedef struct point{
    int row;
    int col;
    int visited;
-};
+}point;
 
-typedef struct stackNode{
+typedef struct queueNode{
    struct point *loc;
    int distance;
-   struct stackNode *next;
-   struct stackNode *prev;
+   struct queueNode *next;
+   struct queueNode *prev;
    int solution;
 }node;
 
+typedef struct queue{
+   node *root;
+   node *first;
+   node *last;
+}queue;
 
-int isValid( int row, int col ){
-   return (row >= 0) && (row < Rows) && (col >= 0) && (col < Cols);
+struct queueNode pop( queue* q ){
+   node first = *q->first;
+   if( q->first == q->last )
+      q->last = q->first->next;
+   q->first = q->first->next;
+   return first;
+}
+
+int enqueue( queue* q, node* n ){
+   if( q->last == q->first &&  q->root == q->last ){
+      *q->last = *n;
+      return 0;
+   }
+   *n->prev = *q->last;
+   *q->last = *n;
+   return 0;
+}
+
+int isEmpty( queue* q ){
+   return q->first == NULL;
+}
+
+
+int isValid( int row, int col, char maze[Rows][Cols] ){
+   if(((row >= 0) && (row < Rows)) && ((col >= 0) && (col < Cols)))
+      return ( ((char (*)[4])maze)[row][col] != '1' );
+   return 0;
 }
 
 void getdims( FILE *fp, int dims[] ){
@@ -84,14 +114,37 @@ void option_p( int i ){
 }
 
 /// Prints shortest solution steps
-void option_s( int i){
+void option_s( FILE *out, int i){
+   fprintf( out, "Solution in %d steps.\n", i );
+}
 
+node* makeNode( point *p, node* n ){
+   node *newNode = malloc(sizeof(node));
+   newNode->loc = p;
+   newNode->distance = n->distance + 1;
+   newNode->solution = 0;
+   newNode->next = malloc(sizeof(node));
+   newNode->prev = malloc(sizeof(node));;
+
+   return newNode;
+}
+
+int visited( queue *q, point *p ){
+   node * curr = q->root;
+   if( p->row == 0 && p->col == 0 )
+      return 1;
+   while(curr->loc){
+      if(curr->loc->col == p->col && curr->loc->row == p->row)
+        return curr->loc->visited;
+      else
+        curr = curr->next;
+   }
+   return 0;
 }
 
 int solver( char maze[Rows][Cols], struct point* src, struct point* dst ){
    if( maze[0][0] == '1' )
       return 0;
-   src->visited = 1;
 
    node *root = malloc(sizeof(node));
    root->loc = src;
@@ -100,13 +153,38 @@ int solver( char maze[Rows][Cols], struct point* src, struct point* dst ){
    root->next = malloc(sizeof(node));
    root->prev = NULL;
 
-   node *curr = root;
-   while( root ){
-      if(curr->loc->row == dst->row && curr->loc->col == dst->col)
-         return curr->distance;
+   queue *q = malloc(sizeof(queue));
+   q->root = root;
+   q->first = root;
+   q->last = root;
 
+   int rownum[4] = {-1, 0, 0, 1};
+   int colnum[4] = {0, -1, 1, 0};
+
+   while( !isEmpty( q ) ){
+      node curr = pop( q );
+
+      if(curr.loc->row == dst->row && curr.loc->col == dst->col){
+         return curr.distance;
+      }
+
+      for( int i = 0; i < 4; i++){
+         int row = curr.loc->row + rownum[i];
+         int col = curr.loc->col + colnum[i];
+         point *p = malloc(sizeof(point));
+         p->row = row;
+         p->col = col;
+         if( isValid(row, col, maze) && !visited( q, p ) ){
+            p->visited = 1;
+            curr.next = makeNode(p, &curr);
+            enqueue( q, makeNode(p, curr.next));
+         }
+
+      }
 
    }
+
+
 }
 
 void pptopbot( FILE *out ){
@@ -203,13 +281,21 @@ int main( int argc, char* argv[] ){
       fip = fopen( infile, "r" );
       read_maze( fip, dims, maze );
    }
-   struct point src = {0, 0, 0};
-   struct point dest = {Rows - 1, Cols - 1, 0};
-   solver( maze, &src, &dest );
+
+   point *src = malloc(sizeof(point));
+   src->row = 0;
+   src->col = 0;
+   src->visited = 1;
+   point *dest = malloc(sizeof(point));
+   dest->row = Rows - 1;
+   dest->col = Cols - 1;
+   dest->visited = 0;
+   int solution = solver( maze, src, dest );
+
    if( d )
       option_d( maze, fop );
    if( s )
-      option_s( s );
+      option_s( fop, solution );
    if( p )
       option_p( p );
 

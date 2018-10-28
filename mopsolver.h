@@ -24,7 +24,7 @@ int read_maze( FILE *fp, int dims[], char maze[Rows][Cols] );
 void option_p( int i );
 
 /// Prints shortest solution steps
-void option_s( int i);
+void option_s( FILE *fp, int i);
 
 /// Pretty prints the maze after reading
 void option_d( char maze[Rows][Cols], FILE *out );
