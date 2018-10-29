@@ -1,5 +1,5 @@
 #
-# Created by gmakemake (Ubuntu Jul 25 2014) on Fri Oct 26 14:42:38 2018
+# Created by gmakemake (Ubuntu Jul 25 2014) on Mon Oct 29 04:02:38 2018
 #
 
 #
@@ -50,13 +50,13 @@ CCLIBFLAGS =
 
 
 CPP_FILES =	
-C_FILES =	mopsolver.c
+C_FILES =	mopsolver.c parsemaze.c printfuncs.c queuefuncs.c solver.c
 PS_FILES =	
 S_FILES =	
-H_FILES =	mopsolver.h
+H_FILES =	mopsolver.h structures.h
 SOURCEFILES =	$(H_FILES) $(CPP_FILES) $(C_FILES) $(S_FILES)
 .PRECIOUS:	$(SOURCEFILES)
-OBJFILES =	
+OBJFILES =	parsemaze.o printfuncs.o queuefuncs.o solver.o 
 
 #
 # Main targets
@@ -71,7 +71,11 @@ mopsolver:	mopsolver.o $(OBJFILES)
 # Dependencies
 #
 
-mopsolver.o:	mopsolver.h
+mopsolver.o:	mopsolver.h structures.h
+parsemaze.o:	mopsolver.h structures.h
+printfuncs.o:	mopsolver.h structures.h
+queuefuncs.o:	mopsolver.h structures.h
+solver.o:	mopsolver.h structures.h
 
 #
 # Housekeeping
