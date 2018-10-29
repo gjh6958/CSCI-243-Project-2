@@ -72,6 +72,8 @@ int main( int argc, char* argv[] ){
    if( p )
       print_maze( fop, maze );
 
+   fclose( fip );
+   fclose( fop );
    return 0;
 
 }

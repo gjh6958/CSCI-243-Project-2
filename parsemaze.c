@@ -30,6 +30,7 @@ void getdims( FILE *fp, int dims[] ){
 
    Rows = N;
    Cols = M;
+   fclose( fp );
 }
 
 /// Tis fucntion reads the maze from a given file

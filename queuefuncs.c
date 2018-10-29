@@ -19,6 +19,7 @@ int enqueue( queue* q, node *n ){
    *q->last = *n;
    q->last->next->prev = q->last;
    q->last = q->last->next;
+   free( n );
    return 0;
 }
 
