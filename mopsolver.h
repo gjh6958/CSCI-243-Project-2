@@ -21,7 +21,7 @@ int write_maze( FILE *fp );
 int read_maze( FILE *fp, int dims[], char maze[Rows][Cols] );
 
 /// prints an optimal path
-void option_p( int i );
+void option_p( FILE *fp, char maze[Rows][Cols] );
 
 /// Prints shortest solution steps
 void option_s( FILE *fp, int i);

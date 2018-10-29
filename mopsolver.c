@@ -10,7 +10,6 @@
 typedef struct point{
    int row;
    int col;
-   int visited;
 }point;
 
 typedef struct queueNode{
@@ -35,24 +34,21 @@ struct queueNode pop( queue* q ){
    return first;
 }
 
-int enqueue( queue* q, node* n ){
-   if( q->last == q->first &&  q->root == q->last ){
-      *q->last = *n;
-      return 0;
-   }
-   *n->prev = *q->last;
+int enqueue( queue* q, node *n ){
    *q->last = *n;
+   q->last->next->prev = q->last;
+   q->last = q->last->next;
    return 0;
 }
 
 int isEmpty( queue* q ){
-   return q->first == NULL;
+   return q->first->next == NULL;
 }
 
 
 int isValid( int row, int col, char maze[Rows][Cols] ){
    if(((row >= 0) && (row < Rows)) && ((col >= 0) && (col < Cols)))
-      return ( ((char (*)[4])maze)[row][col] != '1' );
+      return ( maze[row][col] == '0' );
    return 0;
 }
 
@@ -62,6 +58,9 @@ void getdims( FILE *fp, int dims[] ){
    char c;
 
    while( c = fgetc( fp ) ){
+      while( c == ' ' ){
+         c = fgetc( fp );
+      }
       if( c == '\n' )
          N++;
       else if( c == EOF )
@@ -71,8 +70,6 @@ void getdims( FILE *fp, int dims[] ){
    }
 
    M = (M/N);
-
-   printf("Rows: %d, Cols: %d\n", N, M);
 
    dims[0] = N;
    dims[1] = M;
@@ -91,15 +88,14 @@ int read_maze( FILE *fp, int dims[], char maze[Rows][Cols] ){
    for( rowcount; rowcount < Rows; rowcount++ ){
       for( colcount; colcount < Cols; colcount++ ){
          c = fgetc( fp );
-         if( c == '\n' )
+         while( c == '\n' || c == ' ' ){
             c = fgetc( fp );
+         }
          if( c == EOF )
             return 0;
          maze[rowcount][colcount] = c;
-         printf("%c", maze[rowcount][colcount]);
       }
       colcount = 0;
-      printf("\n");
    }
 }
 
@@ -109,22 +105,25 @@ int write_maze( FILE *fp ){
 }
 
 /// prints an optimal path
-void option_p( int i ){
-
+void option_p( FILE *fp, char maze[Rows][Cols] ){
+   option_d( maze, fp );
 }
 
 /// Prints shortest solution steps
-void option_s( FILE *out, int i){
-   fprintf( out, "Solution in %d steps.\n", i );
+void option_s( FILE *out, int i ){
+   if( i == -1 )
+      fprintf( out, "No solution.\n" );
+   else
+      fprintf( out, "Solution in %d steps.\n", i );
 }
 
 node* makeNode( point *p, node* n ){
    node *newNode = malloc(sizeof(node));
    newNode->loc = p;
    newNode->distance = n->distance + 1;
-   newNode->solution = 0;
    newNode->next = malloc(sizeof(node));
-   newNode->prev = malloc(sizeof(node));;
+   //newNode->next->prev = newNode;
+   newNode->prev = n;
 
    return newNode;
 }
@@ -135,22 +134,32 @@ int visited( queue *q, point *p ){
       return 1;
    while(curr->loc){
       if(curr->loc->col == p->col && curr->loc->row == p->row)
-        return curr->loc->visited;
+        return 1;
       else
         curr = curr->next;
    }
    return 0;
 }
 
+void markSolutionPoints( node *n, char maze[Rows][Cols] ){
+   node *curr = n;
+   while( curr != NULL ){
+      int row = curr->loc->row;
+      int col = curr->loc->col;
+      maze[row][col] = '3';
+      curr = curr->prev;
+   }
+}
+
 int solver( char maze[Rows][Cols], struct point* src, struct point* dst ){
    if( maze[0][0] == '1' )
-      return 0;
+      return -1;
 
    node *root = malloc(sizeof(node));
    root->loc = src;
    root->distance = 0;
-   root->solution = 1;
    root->next = malloc(sizeof(node));
+   root->next->prev = root;
    root->prev = NULL;
 
    queue *q = malloc(sizeof(queue));
@@ -158,33 +167,32 @@ int solver( char maze[Rows][Cols], struct point* src, struct point* dst ){
    q->first = root;
    q->last = root;
 
-   int rownum[4] = {-1, 0, 0, 1};
-   int colnum[4] = {0, -1, 1, 0};
+   int rownum[4] = {1, -1, 0, 0};
+   int colnum[4] = {0, 0, 1, -1};
 
    while( !isEmpty( q ) ){
-      node curr = pop( q );
+      node *curr = q->first;
 
-      if(curr.loc->row == dst->row && curr.loc->col == dst->col){
-         return curr.distance;
+      if(curr->loc->row == dst->row && curr->loc->col == dst->col){
+         markSolutionPoints( curr, maze );
+         return curr->distance + 1;
       }
 
+      pop( q );
+
       for( int i = 0; i < 4; i++){
-         int row = curr.loc->row + rownum[i];
-         int col = curr.loc->col + colnum[i];
+         int row = curr->loc->row + rownum[i];
+         int col = curr->loc->col + colnum[i];
          point *p = malloc(sizeof(point));
          p->row = row;
          p->col = col;
-         if( isValid(row, col, maze) && !visited( q, p ) ){
-            p->visited = 1;
-            curr.next = makeNode(p, &curr);
-            enqueue( q, makeNode(p, curr.next));
-         }
+         if( isValid(row, col, maze) && !visited( q, p ) )
+            enqueue( q, makeNode( p, curr ) );
 
       }
 
    }
-
-
+   return -1;
 }
 
 void pptopbot( FILE *out ){
@@ -199,14 +207,22 @@ void pptopbot( FILE *out ){
 void option_d( char maze[Rows][Cols], FILE *out ){
    pptopbot( out );
    for( int rowcount = 0; rowcount < Rows; rowcount++ ){
-      fprintf(out, "| ");
+      if(rowcount != 0)
+         fprintf(out, "| ");
+      else
+         fprintf(out, "  ");
       for( int colcount = 0; colcount < Cols; colcount++ ){
          if( maze[rowcount][colcount] == '0' )
             fprintf(out, ". ");
          else if( maze[rowcount][colcount] == '1' )
             fprintf(out, "# ");
+         else if( maze[rowcount][colcount] == '3' )
+            fprintf(out, "+ ");
       }
-      fprintf(out, "|\n");
+      if(rowcount != Rows-1)
+         fprintf(out, "|\n");
+      else
+         fprintf(out, " \n");
    }
    pptopbot( out );
 }
@@ -257,10 +273,6 @@ int main( int argc, char* argv[] ){
       }
    }
 
-
-   printf("\nFlags set, p: %d s: %d d: %d h: %d", p, s, d, h);
-   printf("\nInfile: %s", infile);
-   printf("\nOutfile: %s\n", outfile);
    if(outfile != NULL)
       fop = fopen( outfile, "w" );
    if(infile != NULL)
@@ -281,23 +293,21 @@ int main( int argc, char* argv[] ){
       fip = fopen( infile, "r" );
       read_maze( fip, dims, maze );
    }
+   if( d )
+      option_d( maze, fop );
 
    point *src = malloc(sizeof(point));
    src->row = 0;
    src->col = 0;
-   src->visited = 1;
    point *dest = malloc(sizeof(point));
    dest->row = Rows - 1;
    dest->col = Cols - 1;
-   dest->visited = 0;
    int solution = solver( maze, src, dest );
 
-   if( d )
-      option_d( maze, fop );
    if( s )
       option_s( fop, solution );
    if( p )
-      option_p( p );
+      option_p( fop, maze );
 
    return 0;
 
