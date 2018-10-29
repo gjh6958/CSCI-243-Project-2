@@ -21,21 +21,22 @@ void markSolutionPoints( node *n, char maze[Rows][Cols] ){
    }
 }
 
-int solver( char maze[Rows][Cols], struct point* src, struct point* dst ){
+int solver( char maze[Rows][Cols] ){
    if( maze[0][0] == '1' )
       return -1;
 
+   point src = { 0, 0 };
+   point dst = { Rows - 1, Cols - 1 };
+
    node *root = malloc(sizeof(node));
-   root->loc = src;
+   root->loc = &src;
    root->distance = 0;
    root->next = malloc(sizeof(node));
    root->next->prev = root;
    root->prev = NULL;
 
-   queue *q = malloc(sizeof(queue));
-   q->root = root;
-   q->first = root;
-   q->last = root;
+   queue qu = { root, root, root };
+   queue *q = &qu;
 
    int rownum[4] = {1, -1, 0, 0};
    int colnum[4] = {0, 0, 1, -1};
@@ -43,9 +44,11 @@ int solver( char maze[Rows][Cols], struct point* src, struct point* dst ){
    while( !isEmpty( q ) ){
       node *curr = q->first;
 
-      if(curr->loc->row == dst->row && curr->loc->col == dst->col){
+      if(curr->loc->row == dst.row && curr->loc->col == dst.col){
          markSolutionPoints( curr, maze );
-         return curr->distance + 1;
+         int solution = curr->distance + 1;
+         destroyQueue( q );
+         return solution;
       }
 
       pop( q );
@@ -53,14 +56,14 @@ int solver( char maze[Rows][Cols], struct point* src, struct point* dst ){
       for( int i = 0; i < 4; i++){
          int row = curr->loc->row + rownum[i];
          int col = curr->loc->col + colnum[i];
-         point *p = malloc(sizeof(point));
-         p->row = row;
-         p->col = col;
+         point loc = { row, col };
+         point *p = &loc;
          if( isValid(row, col, maze) && !visited( q, p ) )
             enqueue( q, makeNode( p, curr ) );
 
       }
 
    }
+   destroyQueue( q );
    return -1;
 }

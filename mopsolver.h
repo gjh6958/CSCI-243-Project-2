@@ -28,6 +28,10 @@ node pop( queue* q );
 /// structure and back links it to its parent within the maze.
 node* makeNode( point *p, node *n );
 
+/// This function is responsible for freeing all of the
+/// dynamically allocated memory contained in the queue.
+void destroyQueue( queue *q );
+
 /// This function returns a boolean in the form of an
 /// integer to check if the given row and column are
 /// passable within the maze and within the scope of
@@ -47,7 +51,7 @@ void markSolutionPoints( node *n, char maze[Rows][Cols] );
 /// Maze traversal function that preforms the BFS on the
 /// given maze, creates and enqueues the location nodes,
 /// and returns the length of the optimal solution.
-int solver( char maze[Rows][Cols], struct point* src, struct point* dst );
+int solver( char maze[Rows][Cols] );
 
 /// Function responsible for getting the dimensions of the
 /// provided maze.

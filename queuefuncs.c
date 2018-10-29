@@ -28,10 +28,11 @@ int isEmpty( queue* q ){
 
 node* makeNode( point *p, node* n ){
    node *newNode = malloc(sizeof(node));
-   newNode->loc = p;
+   newNode->loc = malloc(sizeof(point));
+   newNode->loc->row = p->row;
+   newNode->loc->col = p->col;
    newNode->distance = n->distance + 1;
    newNode->next = malloc(sizeof(node));
-   //newNode->next->prev = newNode;
    newNode->prev = n;
 
    return newNode;
@@ -50,3 +51,16 @@ int visited( queue *q, point *p ){
    return 0;
 }
 
+void destroyQueue( queue *q ){
+   node *curr = q->root->next;
+   free( q->root );
+   while( curr->next != NULL ){
+      free( curr->loc );
+      node *next = curr->next;
+      free( curr );
+      curr = next;
+   }
+   free( curr->next );
+   free( curr->loc );
+   free( curr );
+}

@@ -65,13 +65,7 @@ int main( int argc, char* argv[] ){
    if( d )
       print_maze( fop, maze );
 
-   point *src = malloc(sizeof(point));
-   src->row = 0;
-   src->col = 0;
-   point *dest = malloc(sizeof(point));
-   dest->row = Rows - 1;
-   dest->col = Cols - 1;
-   int solution = solver( maze, src, dest );
+   int solution = solver( maze );
 
    if( s )
       option_s( fop, solution );
