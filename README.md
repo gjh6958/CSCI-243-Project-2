@@ -16,4 +16,5 @@ Options:
         -o OUTFILE      Write all output to OUTFILE.  		(Default: stdout)
         
 Example maze file provided: maze.in
+
 Example output file provided: maze.out
