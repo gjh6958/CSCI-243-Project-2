@@ -28,7 +28,6 @@ typedef struct point{
 typedef struct queueNode{
    point *loc;
    int distance;
-   int solution;
    struct queueNode *next;
    struct queueNode *prev;
 }node;

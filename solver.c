@@ -36,9 +36,13 @@ int solver( char maze[Rows][Cols] ){
    point dst = { Rows - 1, Cols - 1 };
 
    node *root = malloc(sizeof(node));
-   root->loc = &src;
+   root->loc = malloc(sizeof(point));
+   *root->loc = src;
    root->distance = 0;
    root->next = malloc(sizeof(node));
+   root->next->loc = malloc(sizeof(point)); // Not freed
+   root->next->loc->row = -1;
+   root->next->loc->col = -1;
    root->next->prev = root;
    root->prev = NULL;
 
