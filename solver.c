@@ -19,8 +19,8 @@ int isValid( int row, int col, char maze[Rows][Cols] ){
 void markSolutionPoints( node *n, char maze[Rows][Cols] ){
    node *curr = n;
    while( curr != NULL ){
-      int row = curr->loc->row;
-      int col = curr->loc->col;
+      int row = curr->loc.row;
+      int col = curr->loc.col;
       maze[row][col] = '3';
       curr = curr->prev;
    }
@@ -36,13 +36,11 @@ int solver( char maze[Rows][Cols] ){
    point dst = { Rows - 1, Cols - 1 };
 
    node *root = malloc(sizeof(node));
-   root->loc = malloc(sizeof(point));
-   *root->loc = src;
+   root->loc = src;
    root->distance = 0;
    root->next = malloc(sizeof(node));
-   root->next->loc = malloc(sizeof(point)); // Not freed
-   root->next->loc->row = -1;
-   root->next->loc->col = -1;
+   root->next->loc.row = -1;
+   root->next->loc.col = -1;
    root->next->prev = root;
    root->prev = NULL;
 
@@ -55,7 +53,7 @@ int solver( char maze[Rows][Cols] ){
    while( !isEmpty( q ) ){
       node *curr = q->first;
 
-      if(curr->loc->row == dst.row && curr->loc->col == dst.col){
+      if(curr->loc.row == dst.row && curr->loc.col == dst.col){
          markSolutionPoints( curr, maze );
          int solution = curr->distance + 1;
          destroyQueue( q );
@@ -65,8 +63,8 @@ int solver( char maze[Rows][Cols] ){
       pop( q );
 
       for( int i = 0; i < 4; i++){
-         int row = curr->loc->row + rownum[i];
-         int col = curr->loc->col + colnum[i];
+         int row = curr->loc.row + rownum[i];
+         int col = curr->loc.col + colnum[i];
          point loc = { row, col };
          point *p = &loc;
          if( isValid(row, col, maze) && !visited( q, p ) )

@@ -26,7 +26,7 @@ typedef struct point{
 /// link together to form the queue
 /// and solution path.
 typedef struct queueNode{
-   point *loc;
+   point loc;
    int distance;
    struct queueNode *next;
    struct queueNode *prev;

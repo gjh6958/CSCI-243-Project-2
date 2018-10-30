@@ -34,14 +34,12 @@ int isEmpty( queue* q ){
 // Makes a new node and back links it to its parent
 node* makeNode( point *p, node* n ){
    node *newNode = malloc(sizeof(node));
-   newNode->loc = malloc(sizeof(point));
-   newNode->loc->row = p->row;
-   newNode->loc->col = p->col;
+   newNode->loc.row = p->row;
+   newNode->loc.col = p->col;
    newNode->distance = n->distance + 1;
    newNode->next = malloc(sizeof(node));
-   newNode->next->loc = malloc(sizeof(point)); // Not freed
-   newNode->next->loc->row = -1;
-   newNode->next->loc->col = -1;
+   newNode->next->loc.row = -1;
+   newNode->next->loc.col = -1;
    newNode->prev = n;
 
    return newNode;
@@ -52,8 +50,8 @@ int visited( queue *q, point *p ){
    node * curr = q->root;
    if( p->row == 0 && p->col == 0 )
       return 1;
-   while( curr->loc->row != -1 ){
-      if(curr->loc->col == p->col && curr->loc->row == p->row)
+   while( curr->loc.row != -1 ){
+      if(curr->loc.col == p->col && curr->loc.row == p->row)
         return 1;
       else
         curr = curr->next;
@@ -64,14 +62,11 @@ int visited( queue *q, point *p ){
 // Frees the data stored in the queue
 void destroyQueue( queue *q ){
    node *curr = q->root;
-   while( curr->next->loc->row != -1 ){
-      free( curr->loc );
+   while( curr->next->loc.row != -1 ){
       node *next = curr->next;
       free( curr );
       curr = next;
    }
-   free( curr->next->loc );
    free( curr->next );
-   free( curr->loc );
    free( curr );
 }
