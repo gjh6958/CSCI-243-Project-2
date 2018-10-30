@@ -1,4 +1,5 @@
 /*
+ * Author - Grayson Hassell
  * Source file for the functions that are responsible
  * for parsing the in file for characters and building
  * the array representation of the maze.
@@ -6,7 +7,9 @@
 
 #include "mopsolver.h"
 
-void getdims( FILE *fp, int dims[] ){
+// Gets the dimensions of the maze
+// data and sets global variable
+void getdims( FILE *fp ){
    int N = 0; // rows
    int M = 0; // cols
    char c;
@@ -25,17 +28,13 @@ void getdims( FILE *fp, int dims[] ){
 
    M = (M/N);
 
-   dims[0] = N;
-   dims[1] = M;
-
    Rows = N;
    Cols = M;
    fclose( fp );
 }
 
-/// Tis fucntion reads the maze from a given file
-int read_maze( FILE *fp, int dims[], char maze[Rows][Cols] ){
-
+/// This function reads the maze from a given file
+void read_maze( FILE *fp, char maze[Rows][Cols] ){
    char c;
    int colcount = 0;
    int rowcount = 0;
@@ -47,7 +46,7 @@ int read_maze( FILE *fp, int dims[], char maze[Rows][Cols] ){
             c = fgetc( fp );
          }
          if( c == EOF )
-            return 0;
+            return;
          maze[rowcount][colcount] = c;
       }
       colcount = 0;

@@ -1,16 +1,21 @@
 /*
+ * Author - Grayson Hassell
  * Source file for the functions that search the maze,
  * build the queue, and mark the solution path.
  */
 
 #include "mopsolver.h"
 
+// Checks to see if a given location
+// in the maze is a valid move
 int isValid( int row, int col, char maze[Rows][Cols] ){
    if(((row >= 0) && (row < Rows)) && ((col >= 0) && (col < Cols)))
       return ( maze[row][col] == '0' );
    return 0;
 }
 
+// Marks the points in the maze that
+// are in the solution path
 void markSolutionPoints( node *n, char maze[Rows][Cols] ){
    node *curr = n;
    while( curr != NULL ){
@@ -21,6 +26,8 @@ void markSolutionPoints( node *n, char maze[Rows][Cols] ){
    }
 }
 
+// Algorithem responsible for finding the
+// optimal solution to the maze
 int solver( char maze[Rows][Cols] ){
    if( maze[0][0] == '1' )
       return -1;

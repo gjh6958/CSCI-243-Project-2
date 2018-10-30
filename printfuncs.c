@@ -6,6 +6,8 @@
 
 #include "mopsolver.h"
 
+// Pretty prints the top and bottom
+// borders of the maze
 void pptopbot( FILE *out ){
    fprintf(out, "|");
    for( int i = 0; i < Cols * 2 + 1; i++)
@@ -38,17 +40,26 @@ void print_maze( FILE *out, char maze[Rows][Cols] ){
    pptopbot( out );
 }
 
-/// Prints helpful mesaage to stdout and exit
-void option_h( int i, FILE* outfile ){
+/// Prints helpful message to stdout and exit
+void option_h( FILE* outfile ){
    fprintf(outfile, "USAGE:\n");
    fprintf(outfile, "mopsolver [-hdsp] [-i INFILE] [-o OUTFILE]\n\n");
    fprintf(outfile, "Options:\n");
-   fprintf(outfile, "     -h      Print this helpful message to stdout and exit.\n");
-   fprintf(outfile, "     -d      Pretty print (display) the maze after reading.  (Default: off)\n");
-   fprintf(outfile, "     -s      Print shortest solution steps.                     (Default: off)\n");
-   fprintf(outfile, "     -p      Print an optimal path.                             (Default: off)\n");
-   fprintf(outfile, "     -i INFILE       Read maze from INFILE.                     (Default: stdin)\n");
-   fprintf(outfile, "     -o OUTFILE      Write all output to OUTFILE.               (Default: stdout)\n");
+   fprintf(outfile, "        -h     ");
+   fprintf(outfile, " Print this helpful message to stdout and exit.\n");
+   fprintf(outfile, "        -d     ");
+   fprintf(outfile, " Pretty print (display) the maze after reading.");
+   fprintf(outfile, "  (Default: off)\n");
+   fprintf(outfile, "        -s     ");
+   fprintf(outfile, " Print shortest solution steps.");
+   fprintf(outfile, "                  (Default: off)\n");
+   fprintf(outfile, "        -p     ");
+   fprintf(outfile, " Print an optimal path.              ");
+   fprintf(outfile, "            (Default: off)\n");
+   fprintf(outfile, "        -i INFILE       Read maze from INFILE.");
+   fprintf(outfile, "                  (Default: stdin)\n");
+   fprintf(outfile, "        -o OUTFILE      Write all output to OUTFILE.");
+   fprintf(outfile, "            (Default: stdout)\n");
 
 }
 

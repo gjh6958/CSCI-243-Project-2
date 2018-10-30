@@ -1,4 +1,5 @@
 /*
+ * Author - Grayson Hassell
  * Source file that contains the functions
  * responsible for manipulating the values
  * and pointers stored in a queue structure
@@ -7,6 +8,7 @@
 #include "mopsolver.h"
 #include "structures.h"
 
+// Iterates the queue first pointer
 node pop( queue* q ){
    node first = *q->first;
    if( q->first == q->last )
@@ -15,18 +17,21 @@ node pop( queue* q ){
    return first;
 }
 
-int enqueue( queue* q, node *n ){
+// Places the new node data at the end of the queue
+void enqueue( queue* q, node *n ){
    *q->last = *n;
    q->last->next->prev = q->last;
    q->last = q->last->next;
    free( n );
-   return 0;
+   return;
 }
 
+// Checks to see if the queue is empty
 int isEmpty( queue* q ){
    return q->first->next == NULL;
 }
 
+// Makes a new node and back links it to its parent
 node* makeNode( point *p, node* n ){
    node *newNode = malloc(sizeof(node));
    newNode->loc = malloc(sizeof(point));
@@ -39,6 +44,7 @@ node* makeNode( point *p, node* n ){
    return newNode;
 }
 
+// Checks to see if the given point has been visited
 int visited( queue *q, point *p ){
    node * curr = q->root;
    if( p->row == 0 && p->col == 0 )
@@ -52,6 +58,7 @@ int visited( queue *q, point *p ){
    return 0;
 }
 
+// Frees the data stored in the queue
 void destroyQueue( queue *q ){
    node *curr = q->root->next;
    free( q->root );

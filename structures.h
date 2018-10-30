@@ -1,4 +1,5 @@
 /*
+ * Author - Grayson Hassell
  * Header file that defines the
  * global variables and structures
  * used throughout the program
