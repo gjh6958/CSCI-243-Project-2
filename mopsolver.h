@@ -74,15 +74,15 @@ void markSolutionPoints( node *n, char maze[Rows][Cols] );
 int solver( char maze[Rows][Cols] );
 
 /// Function responsible for getting the dimensions of the
-/// provided maze.
+/// provided maze and reading the file into a dynamic buffer.
 /// @param fp The file pointer of the file containing raw maze data.
-/// @param dims An integer array to contain the dimensions of the maze
-void getdims( FILE *fp );
+/// @return A dynamically allocated character buffer that contains the maze data.
+char* getdims( FILE *fp );
 
 /// This function reades the plain text maze from a given file.
-/// @param fp A file pointer to the file containing raw maze data
+/// @param buffer The buffer with the maze vlues read in from the file.
 /// @param maze The empty 2D character array to be populated with read in maze data
-void read_maze( FILE *fp, char maze[Rows][Cols] );
+void read_maze( char* buffer, char maze[Rows][Cols] );
 
 /// Pretty prints the top and bottom borders of the maze.
 /// @param out The file pointer to write output to.

@@ -64,16 +64,15 @@ int main( int argc, char* argv[] ){
       return 0;
    }
 
-   if( infile != NULL){
-      getdims( fip );
-   }
+   // Creates the maze value buffer and populates itwith value from the file
+   char *buffer;
+   buffer = getdims( fip );
 
    // Creates the maze and populates it
    char maze[Rows][Cols];
-   if( infile != NULL ){
-      fip = fopen( infile, "r" );
-      read_maze( fip, maze );
-   }
+   read_maze( buffer, maze );
+
+   free( buffer );
 
    if( d )
       print_maze( fop, maze );
@@ -85,7 +84,6 @@ int main( int argc, char* argv[] ){
    if( p )
       print_maze( fop, maze );
 
-   fclose( fip );
    fclose( fop );
    return 0;
 
